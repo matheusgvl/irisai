@@ -68,7 +68,7 @@ export default function RecordPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto h-[calc(100vh-8rem)] flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
+    <div className="max-w-5xl mx-auto min-h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] py-8 md:py-0 flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
 
       {isProcessing ? (
         <div className="text-center">
