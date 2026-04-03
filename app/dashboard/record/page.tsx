@@ -69,7 +69,7 @@ export default function RecordPage() {
 
   return (
     <div className="max-w-5xl mx-auto h-[calc(100vh-8rem)] flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
-      
+
       {isProcessing ? (
         <div className="text-center">
           <div className="relative w-32 h-32 mx-auto mb-8">
@@ -93,7 +93,7 @@ export default function RecordPage() {
                 <p className="text-xs text-gray-500">Conversa automatizada de coleta de dados</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={handleChatProcess}
               className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm font-bold shadow-md transition-colors"
             >
@@ -106,8 +106,8 @@ export default function RecordPage() {
               <div key={i} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                 <div className={clsx(
                   "px-4 py-2.5 rounded-2xl max-w-[80%] text-sm",
-                  m.role === "user" 
-                    ? "bg-teal-600 text-white rounded-br-none" 
+                  m.role === "user"
+                    ? "bg-teal-600 text-white rounded-br-none"
                     : "glass border border-(--border) text-gray-800 dark:text-gray-200 rounded-bl-none shadow-sm"
                 )}>
                   {m.content}
@@ -118,21 +118,21 @@ export default function RecordPage() {
           </div>
 
           <form onSubmit={handleSendMessage} className="p-4 border-t border-(--border) bg-white dark:bg-[#18181b] flex items-center gap-3">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setViewMode("options")}
               className="text-gray-400 hover:text-red-500 font-bold px-2 text-xs transition-colors"
             >
               Cancelar
             </button>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               placeholder="Descreva o que está sentindo..."
               className="flex-1 bg-gray-100 dark:bg-white/5 border border-transparent focus:border-teal-500 rounded-full px-4 py-2.5 text-sm outline-none transition-colors"
             />
-            <button 
+            <button
               type="submit"
               disabled={!chatInput.trim()}
               className="p-2.5 bg-teal-600 disabled:bg-gray-300 dark:disabled:bg-white/10 text-white rounded-full transition-colors flex items-center justify-center shrink-0"
@@ -144,7 +144,7 @@ export default function RecordPage() {
       ) : (
         <div className="w-full">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Nova Cápitura Clínica</h2>
+            <h2 className="text-3xl font-bold mb-4">Nova Captura Clínica</h2>
             <p className="text-gray-500 max-w-lg mx-auto">
               Escolha a forma como deseja registrar os dados deste atendimento médico. A IA processará qualquar formato.
             </p>
@@ -163,12 +163,12 @@ export default function RecordPage() {
                 </div>
               )}
 
-              <button 
+              <button
                 onClick={handleRecordToggle}
                 className={clsx(
                   "w-24 h-24 rounded-full flex items-center justify-center shadow-xl transition-all duration-500 mb-6 border-4",
-                  isRecording 
-                    ? "bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.6)]" 
+                  isRecording
+                    ? "bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20 shadow-[0_0_40px_rgba(239,68,68,0.6)]"
                     : "bg-teal-600 border-teal-400 text-white hover:bg-teal-500 hover:scale-105"
                 )}
               >
@@ -184,7 +184,7 @@ export default function RecordPage() {
             </div>
 
             {/* Chat Triage Option */}
-            <div 
+            <div
               onClick={() => !isRecording && setViewMode("chat")}
               className={clsx(
                 "glass p-8 rounded-3xl flex flex-col items-center justify-center text-center transition-all duration-300 hover:border-blue-500/50 hover:bg-blue-500/5 cursor-pointer",
