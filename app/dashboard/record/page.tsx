@@ -5,6 +5,14 @@ import { Mic, Upload, StopCircle, Loader2, MessageSquare, Send, Bot } from "luci
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
 
+/**
+ * INTEGRAÇÃO FRONTEND (O CORAÇÃO DO SISTEMA):
+ * Local onde a gravação é processada.
+ * INTEGRAÇÃO:
+ * 1. Ao parar a gravação, o 'blob' de áudio deve ser enviado para uma API de Transcrição.
+ * 2. O resultado retornado (JSON com SOAP e Resumo) deve ser salvo no Banco via 'POST /api/sessions'.
+ */
+
 export default function RecordPage() {
   const [viewMode, setViewMode] = useState<"options" | "chat">("options");
   const [isRecording, setIsRecording] = useState(false);

@@ -7,6 +7,14 @@ import { Search, UserPlus, FileText, ChevronRight, UserCircle } from "lucide-rea
 import Link from "next/link";
 import clsx from "clsx";
 
+/**
+ * INTEGRAÇÃO FRONTEND:
+ * Atualmente esta página usa 'mockPatients' do arquivo @/lib/data.
+ * Para tornar real:
+ * 1. Adicionar 'useEffect' para buscar dados de '/api/patients'.
+ * 2. Substituir o mapeamento do mock pelo estado da API.
+ */
+
 export default function PatientsPage() {
   return (
     <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
