@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { User, Shield, CreditCard, Puzzle, Bell, Laptop, Stethoscope, Save, UserCircle, Loader2 } from "lucide-react";

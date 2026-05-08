@@ -36,7 +36,7 @@ export async function POST(request: Request) {
           Idioma: Português do Brasil.`
         },
         ...messages.map((m: any) => ({
-          role: m.role === "bot" ? "assistant" : "user",
+          role: (m.role === "bot" ? "assistant" : "user") as "assistant" | "user",
           content: m.content
         }))
       ],

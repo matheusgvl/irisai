@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Lock, Mail, User, Stethoscope, Sparkles, AlertCircle, CheckCircle2, UserCircle } from "lucide-react";
+import { ArrowRight, Lock, Mail, User, Stethoscope, Sparkles, AlertCircle, CheckCircle2, UserCircle, Loader2 } from "lucide-react";
 import clsx from "clsx";
 
 export default function CadastroPage() {
