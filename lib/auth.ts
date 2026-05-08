@@ -39,7 +39,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-//* USAR GO
+  //* USAR GO
 
 
   providers: [
@@ -77,7 +77,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Senha incorreta");
         }
 
-        // Return user with role for JWT
+        // usar o jwt para enviar o role para a session
         return {
           id: user.id,
           name: user.name,
