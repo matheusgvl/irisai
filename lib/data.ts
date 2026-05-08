@@ -39,7 +39,7 @@ export const mockSessions: Session[] = [
     },
     date: "2023-10-24T10:30:00Z",
     duration: "12m 45s",
-    status: "Completed",
+    status: "Completo",
     transcript:
       "Médico: Olá, João. Como você está se sentindo hoje?\nPaciente: Doutor, tenho tido muita dor de cabeça ultimamente, principalmente no final da tarde. E também um pouco de enjoo.\nMédico: Entendi. Faz quanto tempo que essas dores começaram?\nPaciente: Acho que faz umas duas semanas. Tem piorado.\nMédico: E você aferiu a sua pressão nesse período?\nPaciente: Sim, medi ontem na farmácia e estava 15 por 9.\nMédico: Certo. Vamos fazer alguns exames, mas inicialmente vou prescrever um anti-hipertensivo leve e você retorna em 15 dias. Evite sal em excesso e tente caminhar 30 minutos por dia.",
     summary:
@@ -70,7 +70,7 @@ export const mockSessions: Session[] = [
     },
     date: "2023-10-24T11:15:00Z",
     duration: "08m 20s",
-    status: "Completed",
+    status: "Completo",
     transcript:
       "Médico: Bom dia, Maria. O que te traz aqui?\nPaciente: Bom dia, Doutor. Eu tô com uma dor muito forte na garganta há 3 dias. Dói muito pra engolir, e eu tive um pouco de febre ontem à noite, não medi direito mas o corpo tava quente e doía bastante.\nMédico: Você abriu a boca para olhar? Sentiu alguma placa branca?\nPaciente: Sim, parece que tem uns pontinhos brancos lá atrás. Além disso, os gânglios aqui do pescoço tão inchados.\nMédico: Vamos dar uma olhada. (pausa) Sim, a amígdala esquerda está bem hiperemiada com exsudato purulento. Vai precisar de um antibiótico.\nPaciente: Nossa, eu já imaginava.\nMédico: Vou passar Amoxicilina com Clavulanato por 7 dias. Além do Ibuprofeno para a dor e pra febre se voltar a ter.",
     summary:
@@ -101,7 +101,7 @@ export const mockSessions: Session[] = [
     },
     date: "2023-10-24T14:00:00Z",
     duration: "18m 10s",
-    status: "Processing",
+    status: "Processando",
     transcript:
       "Médico: Sr. Carlos, boa tarde. Como foram as coisas desde a nossa última consulta?\nPaciente: Boa tarde, doutor. Olha, a dor no peito melhorou bastante depois daquele remédio novo. Mas eu tenho me sentido muito cansado pra subir a escada lá de casa. Um pouco de falta de ar.\nMédico: Entendo. E os exames que eu pedi, o senhor conseguiu fazer o ecocardiograma?",
     summary: "Processando análise via IA...",
