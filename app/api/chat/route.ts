@@ -27,6 +27,11 @@ export async function POST(request: Request) {
 
       // Se for array de mensagens, usar para contexto com IA
       if (Array.isArray(messages) && messages.length > 0) {
+        const assistantMessages = messages.map((m: any) => ({
+          role: m.sender === "doctor" ? "assistant" : "user",
+          content: String(m.content),
+        })) as { role: "assistant" | "user"; content: string }[];
+
         const response = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
@@ -45,10 +50,7 @@ export async function POST(request: Request) {
               
               Idioma: Português do Brasil.`
             },
-            ...messages.map((m: any) => ({
-              role: (m.role === "bot" ? "assistant" : "user") as "assistant" | "user",
-              content: m.content
-            }))
+            ...assistantMessages,
           ],
         });
 

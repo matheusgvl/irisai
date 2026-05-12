@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Send, User, Mail, Phone, FileText, Heart, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Send, User, Mail, Phone, FileText, Heart, Loader2, AlertCircle, CheckCircle2, Download } from "lucide-react";
+import { jsPDF } from "jspdf";
 import clsx from "clsx";
 
 interface PatientData {
@@ -20,7 +21,8 @@ interface Message {
   sender: "patient" | "doctor";
   senderName: string;
   senderEmail: string;
-  createdAt?: Date;
+  patientEmail?: string;
+  createdAt?: string | Date;
 }
 
 export default function PacientePage() {
@@ -41,6 +43,7 @@ export default function PacientePage() {
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [pollingActive, setPollingActive] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -51,11 +54,34 @@ export default function PacientePage() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (step === "chat" && formData.email) {
+      setPollingActive(true);
+      fetchMessages();
+      const interval = setInterval(fetchMessages, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [step, formData.email]);
+
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { id, value } = e.target;
     setFormData({ ...formData, [id]: value });
+  };
+
+  const fetchMessages = async () => {
+    if (!formData.email) return;
+
+    try {
+      const res = await fetch(`/api/chat?patientEmail=${encodeURIComponent(formData.email)}`);
+      if (res.ok) {
+        const data: Message[] = await res.json();
+        setMessages(data || []);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar mensagens:", err);
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -71,27 +97,26 @@ export default function PacientePage() {
       });
 
       if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error || "Erro ao enviar dados");
+        const errorMessage = await res.text();
+        throw new Error(errorMessage || "Erro ao enviar dados");
       }
 
       setSuccess(true);
       setTimeout(() => {
         setStep("chat");
         setSuccess(false);
-        // Enviar mensagem inicial de boas-vindas
         setMessages([
           {
             content: `Bem-vindo(a) ${formData.name}! Sua consulta foi iniciada. O médico responderá em breve.`,
             sender: "doctor",
             senderName: "Iris AI",
             senderEmail: "sistema@irisai.com",
-            createdAt: new Date(),
+            createdAt: new Date().toISOString(),
           },
         ]);
-      }, 2000);
+      }, 1000);
     } catch (err: any) {
-      setError(err.message || "Ocorreu um erro ao enviar dados");
+      setError(err.message || "Ocorreu um erro ao salvar os dados do paciente");
       setIsLoading(false);
     }
   };
@@ -101,14 +126,16 @@ export default function PacientePage() {
     if (!messageInput.trim()) return;
 
     const newMessage: Message = {
-      content: messageInput,
+      content: messageInput.trim(),
       sender: "patient",
       senderName: formData.name,
       senderEmail: formData.email,
-      createdAt: new Date(),
+      patientEmail: formData.email,
+      createdAt: new Date().toISOString(),
     };
 
-    setMessages([...messages, newMessage]);
+    const nextMessages = [...messages, newMessage];
+    setMessages(nextMessages);
     setMessageInput("");
     setIsSending(true);
 
@@ -117,7 +144,7 @@ export default function PacientePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: messageInput,
+          messages: nextMessages,
           sender: "patient",
           senderName: formData.name,
           senderEmail: formData.email,
@@ -125,26 +152,88 @@ export default function PacientePage() {
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        // Aqui você pode adicionar resposta automática do médico/IA se necessário
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Erro ao enviar mensagem");
       }
-    } catch (err) {
+
+      const data = await res.json();
+      if (data?.content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            content: data.content,
+            sender: "doctor",
+            senderName: "Iris AI",
+            senderEmail: "sistema@irisai.com",
+            patientEmail: formData.email,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+      }
+    } catch (err: any) {
       console.error("Erro ao enviar mensagem:", err);
+      setError(err.message || "Erro ao enviar mensagem");
     } finally {
       setIsSending(false);
     }
   };
 
+  const formatDate = (date?: string | Date) => {
+    if (!date) return "";
+    const value = typeof date === "string" ? new Date(date) : date;
+    return value.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const downloadPdf = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Resumo da Consulta", 14, 20);
+    doc.setFontSize(11);
+    doc.text(`Nome: ${formData.name}`, 14, 32);
+    doc.text(`Email: ${formData.email}`, 14, 39);
+    doc.text(`Telefone: ${formData.phone}`, 14, 46);
+    doc.text(`Idade: ${formData.age}`, 14, 53);
+    doc.text(`Gênero: ${formData.gender}`, 14, 60);
+    if (formData.cpf) doc.text(`CPF: ${formData.cpf}`, 14, 67);
+    doc.text("Sintomas:", 14, 75);
+    const symptomLines = doc.splitTextToSize(formData.symptoms || "-", 180);
+    doc.text(symptomLines, 14, 82);
+
+    let y = 95 + symptomLines.length * 6;
+    doc.setFontSize(13);
+    doc.text("Histórico de Conversa:", 14, y);
+    y += 8;
+    doc.setFontSize(10);
+
+    messages.forEach((msg) => {
+      const timestamp = msg.createdAt ? formatDate(msg.createdAt) : "";
+      const label = msg.sender === "patient" ? `${msg.senderName} (Paciente)` : "Médico";
+      const lines = doc.splitTextToSize(`${label} [${timestamp}]: ${msg.content}`, 180);
+      if (y + lines.length * 6 > 280) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(lines, 14, y);
+      y += lines.length * 6 + 4;
+    });
+
+    doc.save(`consulta_${formData.name.replace(/\s+/g, "_")}.pdf`);
+  };
+
   return (
     <div className="min-h-screen bg-(--background) flex flex-col relative overflow-hidden">
-      {/* Background gradients */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-teal-500/20 blur-[120px] mix-blend-screen pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emerald-500/20 blur-[120px] mix-blend-screen pointer-events-none" />
 
-      {/* Header */}
       <div className="border-b border-white/10 bg-white/[0.02] backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-teal-500/20 flex items-center justify-center">
               <Heart className="w-5 h-5 text-teal-400" />
@@ -164,13 +253,10 @@ export default function PacientePage() {
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-6 py-8">
         {step === "form" ? (
-          // FORM STEP
           <div className="max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4">
             <div className="mb-8">
               <h2 className="text-3xl font-bold mb-2">Iniciar Consulta</h2>
-              <p className="text-gray-400">
-                Preencha seus dados para que possamos melhor atendê-lo.
-              </p>
+              <p className="text-gray-400">Preencha seus dados para que possamos melhor atendê-lo.</p>
             </div>
 
             <form onSubmit={handleFormSubmit} className="glass rounded-2xl p-8 border border-white/10 space-y-6">
@@ -190,9 +276,7 @@ export default function PacientePage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    Nome Completo
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Nome Completo</label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input
@@ -208,9 +292,7 @@ export default function PacientePage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    E-mail
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">E-mail</label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input
@@ -226,9 +308,7 @@ export default function PacientePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    Telefone
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Telefone</label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <input
@@ -243,9 +323,7 @@ export default function PacientePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    Idade
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Idade</label>
                   <input
                     id="age"
                     type="number"
@@ -257,9 +335,7 @@ export default function PacientePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    Gênero
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Gênero</label>
                   <select
                     id="gender"
                     value={formData.gender}
@@ -273,9 +349,7 @@ export default function PacientePage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    CPF (Opcional)
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">CPF (Opcional)</label>
                   <input
                     id="cpf"
                     type="text"
@@ -287,9 +361,7 @@ export default function PacientePage() {
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-                    Descreva seus sintomas
-                  </label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Descreva seus sintomas</label>
                   <div className="relative">
                     <FileText className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
                     <textarea
@@ -324,16 +396,22 @@ export default function PacientePage() {
             </form>
           </div>
         ) : (
-          // CHAT STEP
-          <div className="h-[calc(100vh-180px)] flex flex-col">
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold mb-1">Chat com o Médico</h2>
-              <p className="text-sm text-gray-400">
-                Paciente: {formData.name} ({formData.email})
-              </p>
+          <div className="flex flex-col h-[calc(100vh-180px)]">
+            <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">Chat com o Médico</h2>
+                <p className="text-sm text-gray-400">Paciente: {formData.name} ({formData.email})</p>
+              </div>
+              <button
+                type="button"
+                onClick={downloadPdf}
+                className="inline-flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10 transition-all"
+              >
+                <Download className="w-4 h-4" />
+                Baixar PDF
+              </button>
             </div>
 
-            {/* Messages Container */}
             <div className="flex-1 glass rounded-2xl border border-white/10 p-6 overflow-y-auto mb-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500 text-center">
@@ -353,15 +431,17 @@ export default function PacientePage() {
                         M
                       </div>
                     )}
-                    <div
-                      className={clsx(
-                        "max-w-xs px-4 py-2 rounded-xl text-sm",
-                        msg.sender === "patient"
-                          ? "bg-teal-600 text-white"
-                          : "bg-white/10 border border-white/20 text-gray-100"
-                      )}
+                    <div className={clsx(
+                      "max-w-[75%] px-4 py-3 rounded-3xl text-sm",
+                      msg.sender === "patient"
+                        ? "bg-teal-600 text-white"
+                        : "bg-white/10 border border-white/20 text-gray-100"
+                    )}
                     >
-                      {msg.content}
+                      <div className="text-[11px] text-gray-400 mb-1">
+                        {msg.sender === "patient" ? msg.senderName : "Médico"} • {formatDate(msg.createdAt)}
+                      </div>
+                      <div>{msg.content}</div>
                     </div>
                     {msg.sender === "patient" && (
                       <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0 text-xs font-bold text-blue-400">
@@ -374,7 +454,12 @@ export default function PacientePage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message Input */}
+            {error && (
+              <div className="mb-4 bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
             <form onSubmit={handleSendMessage} className="flex gap-3">
               <input
                 type="text"
