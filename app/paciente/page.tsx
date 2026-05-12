@@ -26,7 +26,11 @@ interface Message {
 }
 
 export default function PacientePage() {
-  const [step, setStep] = useState<"form" | "chat">("form");
+  const [step, setStep] = useState<"login" | "form" | "chat">("login");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
   const [formData, setFormData] = useState<PatientData>({
     name: "",
     email: "",

@@ -113,14 +113,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const patientEmail = searchParams.get("patientEmail");
 
-    if (!patientEmail) {
-      return new NextResponse("Patient email required", { status: 400 });
-    }
+    const whereClause = patientEmail ? { patientEmail } : {};
 
     const messages = await prisma.message.findMany({
-      where: {
-        patientEmail,
-      },
+      where: whereClause,
       orderBy: {
         createdAt: "asc",
       },

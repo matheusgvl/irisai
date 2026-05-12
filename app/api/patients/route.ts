@@ -21,9 +21,6 @@ export async function GET() {
     }
 
     const patients = await prisma.patient.findMany({
-      where: {
-        userId: session.user.id,
-      },
       include: {
         _count: {
           select: { sessions: true }
