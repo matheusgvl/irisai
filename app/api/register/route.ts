@@ -5,7 +5,7 @@ import prisma from "@/lib/db";
 /**
  * ENDPOINT: POST /api/register
  * INTEGRAÇÃO: Esta rota é chamada pelo formulário de "Sign Up" ou "Criar Conta".
- * O Frontend deve enviar: { name, email, password, crm }
+ * O Frontend deve enviar: { name, email, password, crm, role }
  */
 export async function POST(request: Request) {
   try {
@@ -28,13 +28,16 @@ export async function POST(request: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Definir role baseado no input, com padrão "patient"
+    const userRole = (role === "doctor" || role === "patient") ? role : "patient";
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        crm,
-        role: role || "doctor",
+        crm: userRole === "doctor" ? crm : null,
+        role: userRole,
       },
     });
 

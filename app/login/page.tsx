@@ -29,7 +29,16 @@ export default function LoginPage() {
         setError(res.error);
         setIsLoading(false);
       } else {
-        router.push("/dashboard");
+        // Buscar dados do usuário para verificar role
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        
+        // Redirecionar baseado em role
+        if (session?.user?.role === "patient") {
+          router.push("/paciente");
+        } else {
+          router.push("/dashboard");
+        }
         router.refresh();
       }
     } catch (err) {
