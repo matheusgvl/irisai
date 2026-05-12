@@ -52,7 +52,11 @@ export async function POST(request: Request) {
           ],
         });
 
-        const aiResponse = response.choices[0].message.content;
+        const aiResponse = response.choices[0].message.content ?? "";
+
+        if (!aiResponse) {
+          return new NextResponse("Erro ao gerar resposta da IA", { status: 500 });
+        }
 
         // Salvar resposta da IA
         await prisma.message.create({
