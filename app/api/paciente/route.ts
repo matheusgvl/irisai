@@ -25,8 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json(existingPatient);
     }
 
-    // Criar novo paciente
-    // Por enquanto usamos userId genérico, depois pode ser associado ao médico
+    // Criar novo paciente sem userId (pode ser atribuído depois)
     const patient = await prisma.patient.create({
       data: {
         name,
@@ -35,7 +34,7 @@ export async function POST(request: Request) {
         age: parseInt(age) || 0,
         gender,
         cpf: cpf || null,
-        userId: "system", // Usuário sistema temporário
+        userId: null, // Sem usuário inicialmente
       },
     });
 
