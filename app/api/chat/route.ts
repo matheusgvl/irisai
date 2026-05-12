@@ -58,7 +58,7 @@ export async function POST(request: Request) {
           return new NextResponse("Erro ao gerar resposta da IA", { status: 500 });
         }
 
-        // Salvar resposta da IA
+        // Salvar resposta da IA e responder ao frontend
         await prisma.message.create({
           data: {
             content: aiResponse,
