@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 
 export default withAuth(
   function middleware(req: NextRequest) {
-    const token = req.nextauth.token;
+    const token = (req as any).nextauth?.token;
     
     // Se acessa /dashboard
     if (req.nextUrl.pathname.startsWith("/dashboard")) {
