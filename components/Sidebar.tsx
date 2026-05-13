@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Activity, Settings, Mic, MessageCircle } from "lucide-react";
+import { LayoutDashboard, Users, Activity, Settings, Mic, MessageCircle, FileText } from "lucide-react";
 import clsx from "clsx";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Nova Sessão", href: "/dashboard/record", icon: Mic },
+  { name: "Prontuário SOAP", href: "/dashboard/soap", icon: FileText },
   { name: "Pacientes", href: "/dashboard/patients", icon: Users },
   { name: "Equipe / Médicos", href: "/dashboard/doctors", icon: Users },
   { name: "Mensagens", href: "/dashboard/chats", icon: MessageCircle },

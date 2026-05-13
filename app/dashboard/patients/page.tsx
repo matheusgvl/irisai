@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Search, UserPlus, FileText, ChevronRight, UserCircle, Loader2, X } from "lucide-react";
+import { Search, UserPlus, FileText, UserCircle, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 
@@ -232,7 +232,7 @@ export default function PatientsPage() {
                   <th className="px-6 py-4 font-medium">Idade / Gênero</th>
                   <th className="px-6 py-4 font-medium">Última Consulta</th>
                   <th className="px-6 py-4 font-medium text-center">Sessões Registradas</th>
-                  <th className="px-6 py-4 text-right font-medium">Histórico</th>
+                  <th className="px-6 py-4 text-right font-medium">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -265,11 +265,24 @@ export default function PatientsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link href={`/dashboard/patients/${patient.id}`} className="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 text-gray-400 hover:text-teal-500 transition-colors">
-                        <FileText className="w-4 h-4 mr-1 hidden sm:block" />
-                        <span className="hidden sm:inline-block mr-1 text-xs font-medium">Prontuário</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link 
+                          href={`/dashboard/patients/${patient.id}`} 
+                          className="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm font-medium bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          title="Ver histórico de consultas"
+                        >
+                          <FileText className="w-4 h-4 mr-1" />
+                          Histórico
+                        </Link>
+                        <Link 
+                          href={`/dashboard/soap?patientId=${patient.id}`} 
+                          className="inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm font-medium bg-teal-100 dark:bg-teal-500/20 hover:bg-teal-200 dark:hover:bg-teal-500/30 text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 transition-colors"
+                          title="Gerar prontuário SOAP"
+                        >
+                          <FileText className="w-4 h-4 mr-1" />
+                          SOAP
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
