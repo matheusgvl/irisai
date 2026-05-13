@@ -11,8 +11,8 @@ export default function PatientsPage() {
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  
-  // Modal State
+
+  // mudancas de estados da aplicacao 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +32,7 @@ export default function PatientsPage() {
         setPatients(await res.json());
       }
     } catch (error) {
-      console.error("Failed to fetch patients:", error);
+      console.error("Erro, não tem nenhum paciente cadastrado", error);
     } finally {
       setLoading(false);
     }
@@ -68,8 +68,8 @@ export default function PatientsPage() {
     }
   };
 
-  const filteredPatients = patients.filter(p => 
-    p.name.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredPatients = patients.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
     (p.cpf && p.cpf.includes(search))
   );
 
@@ -80,8 +80,8 @@ export default function PatientsPage() {
           <h2 className="text-2xl font-bold">Diretório de Pacientes</h2>
           <p className="text-gray-500 dark:text-gray-400 mt-1">Gerencie os registros clínicos e acompanhe o histórico.</p>
         </div>
-        
-        <button 
+
+        <button
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-5 py-2.5 rounded-full font-medium transition-all shadow-[0_4px_14px_0_rgba(20,184,166,0.39)] hover:shadow-[0_6px_20px_rgba(20,184,166,0.23)] hover:-translate-y-[1px]"
         >
@@ -97,7 +97,7 @@ export default function PatientsPage() {
           <div className="relative w-full max-w-xl glass rounded-3xl shadow-2xl border border-white/10 overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-(--border) flex justify-between items-center bg-teal-500/5">
               <h3 className="text-xl font-bold">Cadastrar Novo Paciente</h3>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors"
                 disabled={isSubmitting}
@@ -105,36 +105,36 @@ export default function PatientsPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Nome Completo</label>
-                  <input 
+                  <input
                     required
-                    type="text" 
+                    type="text"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Ex: Maria Oliveira"
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Idade</label>
-                  <input 
+                  <input
                     required
-                    type="number" 
+                    type="number"
                     value={formData.age}
-                    onChange={(e) => setFormData({...formData, age: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                     placeholder="Ex: 45"
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Gênero</label>
-                  <select 
+                  <select
                     value={formData.gender}
-                    onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all appearance-none"
                   >
                     <option value="Masculino">Masculino</option>
@@ -144,30 +144,30 @@ export default function PatientsPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">CPF (Opcional)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.cpf}
-                    onChange={(e) => setFormData({...formData, cpf: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
                     placeholder="000.000.000-00"
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Telefone</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="(00) 00000-0000"
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all"
                   />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">E-mail</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="paciente@email.com"
                     className="w-full bg-white dark:bg-black/20 border border-(--border) rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500/50 outline-none transition-all"
                   />
@@ -175,7 +175,7 @@ export default function PatientsPage() {
               </div>
 
               <div className="flex justify-end gap-4 pt-4 border-t border-(--border)">
-                <button 
+                <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
                   disabled={isSubmitting}
@@ -183,7 +183,7 @@ export default function PatientsPage() {
                 >
                   Cancelar
                 </button>
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="flex items-center gap-2 bg-teal-600 hover:bg-teal-500 text-white px-8 py-2.5 rounded-xl font-bold transition-all shadow-[0_4px_14px_0_rgba(20,184,166,0.39)] disabled:opacity-50"
@@ -204,8 +204,8 @@ export default function PatientsPage() {
           </h3>
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Pesquisar por nome ou CPF..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -213,7 +213,7 @@ export default function PatientsPage() {
             />
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-12 flex flex-col items-center justify-center text-gray-500">
@@ -237,8 +237,8 @@ export default function PatientsPage() {
               </thead>
               <tbody>
                 {filteredPatients.map((patient) => (
-                  <tr 
-                    key={patient.id} 
+                  <tr
+                    key={patient.id}
                     className={clsx(
                       "border-b border-(--border) hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors group"
                     )}
@@ -255,7 +255,7 @@ export default function PatientsPage() {
                       {patient.age} anos • {patient.gender}
                     </td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
-                      {patient.sessions?.[0] 
+                      {patient.sessions?.[0]
                         ? format(parseISO(patient.sessions[0].date), "dd 'de' MMMM, yyyy", { locale: ptBR })
                         : "Sem consultas"}
                     </td>
